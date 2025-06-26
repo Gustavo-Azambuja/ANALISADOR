@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analisador Sintático LL(1)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Analisador Sintático LL(1)</h1>
+
+    <section>
+      <label for="input">Digite uma sentença:</label>
+      <input type="text" id="input" placeholder="Ex: abccd" />
+      <button onclick="analisarCompleto()">Traço Completo</button>
+      <button onclick="iniciarPassoAPasso()">Passo a Passo</button>
+      <button id="proximoBtn" onclick="proximoPasso()" style="display:none;">Próximo</button>
+      <button onclick="gerar()">Gerar Sentença</button>
+    </section>
+
+    <section>
+      <h2>Gramática LL(1)</h2>
+      <pre id="gramatica">
+  S → a A D | b B c  
+  A → c B d | b D a  
+  B → b C d | ε  
+  C → c D d  
+  D → d B | a C b
+      </pre>
+    </section>
+
+    <section>
+      <h2>Resultado</h2>
+      <p id="resultado">Nenhuma análise realizada.</p>
+      <p id="iteracoes"></p>
+    </section>
+
+  <section>
+    <h2>Traço da Pilha</h2>
+    <table id="pilhaTable">
+      <thead>
+        <tr>
+          <th>Passo</th>
+          <th>Pilha</th>
+          <th>Entrada</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="pilhaBody">
+      <!-- Linhas geradas dinamicamente -->
+      </tbody>
+    </table>
+  </section>
+
+
+    <section>
+      <h2>Conjuntos FIRST</h2>
+      <pre id="first"></pre>
+    </section>
+
+    <section>
+      <h2>Conjuntos FOLLOW</h2>
+      <pre id="follow"></pre>
+    </section>
+
+    <section>
+      <h2>Tabela de Parsing</h2>
+      <div id="tabela"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
