@@ -139,17 +139,25 @@ function parseSentence(input) {
     trace.push({ stack: [...stack], input: [...buffer], top, current });
 
     if (terminals.includes(top) || top === '$') {
-      if (top === current) buffer.shift();
-      else return { result: 'Rejeitado', trace, iterations: i + 1 };
+      if (top === current) {
+        buffer.shift();
+      } else {
+        return { result: 'Erro', trace, iterations: i + 1 };
+      }
     } else if (parsingTable[top][current]) {
       const production = parsingTable[top][current];
       for (let j = production.length - 1; j >= 0; j--) {
         if (production[j] !== 'ε') stack.push(production[j]);
       }
     } else {
-      return { result: 'Rejeitado', trace, iterations: i + 1 };
+      return { result: 'Erro', trace, iterations: i + 1 };
     }
+
     i++;
+
+    if (stack.length === 0 && buffer.length === 0) {
+      break;
+    }
   }
 
   return { result: 'Aceito', trace, iterations: i };
@@ -209,16 +217,22 @@ computeFollow();
 buildParsingTable();
 atualizarDadosAuxiliares();
 
-// novos botões:
 let passoTrace = [];
 let passoIndex = 0;
 
 function analisarCompleto() {
   const sentenca = document.getElementById("input").value;
-  const resultado = parseSentence(sentenca);
+  exibirTraço(sentenca);
+}
 
-  document.getElementById("resultado").textContent = resultado.result;
-  document.getElementById("iteracoes").textContent = `Interações: ${resultado.iterations}`;
+function gerar() {
+  const sentenca = generateSentence(15);
+  document.getElementById("input").value = sentenca;
+  exibirTraço(sentenca);
+}
+
+function exibirTraço(sentenca) {
+  const resultado = parseSentence(sentenca);
 
   const pilhaBody = document.getElementById("pilhaBody");
   pilhaBody.innerHTML = "";
@@ -236,7 +250,13 @@ function analisarCompleto() {
     entradaCell.textContent = t.input.join(" ");
 
     const acaoCell = document.createElement("td");
-    if (t.top === t.current && terminals.includes(t.top)) {
+
+    // última situação
+    if (t.top === '$' && t.current === '$') {
+      acaoCell.textContent = `Aceito em ${resultado.iterations} interações`;
+    } else if (resultado.result === "Erro" && i === resultado.trace.length - 1) {
+      acaoCell.textContent = `Erro em ${resultado.iterations} interações`;
+    } else if (t.top === t.current && terminals.includes(t.top)) {
       acaoCell.textContent = `Ler → ${t.current}`;
     } else if (parsingTable[t.top] && parsingTable[t.top][t.current]) {
       acaoCell.textContent = `${t.top} → ${parsingTable[t.top][t.current].join(' ')}`;
@@ -262,8 +282,6 @@ function iniciarPassoAPasso() {
   passoTrace = resultado.trace;
   passoIndex = 0;
 
-  document.getElementById("resultado").textContent = resultado.result;
-  document.getElementById("iteracoes").textContent = `Interações: ${resultado.iterations}`;
   document.getElementById("pilhaBody").innerHTML = "";
 
   if (passoTrace.length > 0) {
@@ -288,7 +306,12 @@ function proximoPasso() {
     entradaCell.textContent = t.input.join(" ");
 
     const acaoCell = document.createElement("td");
-    if (t.top === t.current && terminals.includes(t.top)) {
+
+    if (t.top === '$' && t.current === '$') {
+      acaoCell.textContent = `Aceito em ${passoTrace.length} interações`;
+    } else if (passoIndex === passoTrace.length - 1 && t.top !== t.current) {
+      acaoCell.textContent = `Erro em ${passoTrace.length} interações`;
+    } else if (t.top === t.current && terminals.includes(t.top)) {
       acaoCell.textContent = `Ler → ${t.current}`;
     } else if (parsingTable[t.top] && parsingTable[t.top][t.current]) {
       acaoCell.textContent = `${t.top} → ${parsingTable[t.top][t.current].join(' ')}`;
@@ -303,15 +326,15 @@ function proximoPasso() {
 
     document.getElementById("pilhaBody").appendChild(row);
     passoIndex++;
-  }
 
-  if (passoIndex >= passoTrace.length) {
-    document.getElementById("proximoBtn").style.display = "none";
+    if (passoIndex >= passoTrace.length) {
+      document.getElementById("proximoBtn").style.display = "none";
+    }
   }
 }
 
-function gerar() {
-  const sentenca = generateSentence();
-  document.getElementById("input").value = sentenca;
-  analisarCompleto();
+function resetarPilha() {
+  document.getElementById("pilhaBody").innerHTML = "";
+  document.getElementById("input").value = "";
+  document.getElementById("proximoBtn").style.display = "none";
 }

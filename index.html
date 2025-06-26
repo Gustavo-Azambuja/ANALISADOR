@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Analisador Sintático LL(1)</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -12,11 +12,14 @@
 
     <section>
       <label for="input">Digite uma sentença:</label>
-      <input type="text" id="input" placeholder="Ex: abccd" />
-      <button onclick="analisarCompleto()">Traço Completo</button>
-      <button onclick="iniciarPassoAPasso()">Passo a Passo</button>
-      <button id="proximoBtn" onclick="proximoPasso()" style="display:none;">Próximo</button>
-      <button onclick="gerar()">Gerar Sentença</button>
+      <div class="botoes">
+        <input type="text" id="input" placeholder="Ex: abccd" />
+        <button onclick="analisarCompleto()">Traço Completo</button>
+        <button onclick="iniciarPassoAPasso()">Passo a Passo</button>
+        <button id="proximoBtn" onclick="proximoPasso()" style="display:none;">Próximo</button>
+        <button onclick="gerar()">Gerar Sentença</button>
+        <button onclick="resetarPilha()">Resetar</button>
+      </div>
     </section>
 
     <section>
@@ -31,28 +34,21 @@
     </section>
 
     <section>
-      <h2>Resultado</h2>
-      <p id="resultado">Nenhuma análise realizada.</p>
-      <p id="iteracoes"></p>
+      <h2>Traço da Pilha</h2>
+      <table id="pilhaTable">
+        <thead>
+          <tr>
+            <th>Passo</th>
+            <th>Pilha</th>
+            <th>Entrada</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="pilhaBody">
+          <!-- Linhas geradas dinamicamente -->
+        </tbody>
+      </table>
     </section>
-
-  <section>
-    <h2>Traço da Pilha</h2>
-    <table id="pilhaTable">
-      <thead>
-        <tr>
-          <th>Passo</th>
-          <th>Pilha</th>
-          <th>Entrada</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="pilhaBody">
-      <!-- Linhas geradas dinamicamente -->
-      </tbody>
-    </table>
-  </section>
-
 
     <section>
       <h2>Conjuntos FIRST</h2>

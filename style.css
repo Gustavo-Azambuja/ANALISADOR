@@ -94,6 +94,7 @@ p {
 #tabela td.empty {
   background-color: #eee;
 }
+
 #pilhaTable {
   width: 100%;
   border-collapse: collapse;
@@ -113,4 +114,16 @@ p {
 
 #pilhaTable td {
   background-color: #f9f9f9;
+}
+
+.botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.botoes button {
+  flex-shrink: 0;
 }
