@@ -1,5 +1,5 @@
 const grammar = {
-  S: [['a', 'A', 'D'], ['b', 'B', 'c']],
+  S: [['a', 'A', 'D'], ['b', 'B', 'c'], ['c', 'D', 'a']], 
   A: [['c', 'B', 'd'], ['b', 'D', 'a']],
   B: [['b', 'C', 'd'], ['ε']],
   C: [['c', 'D', 'd']],
@@ -133,35 +133,68 @@ function parseSentence(input) {
   const trace = [];
 
   let i = 0;
+
   while (stack.length > 0) {
     const top = stack.pop();
     const current = buffer[0];
-    trace.push({ stack: [...stack], input: [...buffer], top, current });
+
+    let action = '';
 
     if (terminals.includes(top) || top === '$') {
       if (top === current) {
         buffer.shift();
+        action = `Ler → ${current}`;
       } else {
+        action = `Erro em ${i + 1} interações`;
+        trace.push({
+          step: i + 1,
+          stack: [...stack],
+          top,
+          input: [...buffer],
+          current,
+          action
+        });
         return { result: 'Erro', trace, iterations: i + 1 };
       }
     } else if (parsingTable[top][current]) {
       const production = parsingTable[top][current];
+      action = `${top} → ${production.join(' ')}`;
       for (let j = production.length - 1; j >= 0; j--) {
         if (production[j] !== 'ε') stack.push(production[j]);
       }
     } else {
+      action = `Erro em ${i + 1} interações`;
+      trace.push({
+        step: i + 1,
+        stack: [...stack],
+        top,
+        input: [...buffer],
+        current,
+        action
+      });
       return { result: 'Erro', trace, iterations: i + 1 };
     }
 
+    trace.push({
+      step: i + 1,
+      stack: [...stack],
+      top,
+      input: [...buffer],
+      current,
+      action
+    });
+
     i++;
 
+    // se ambos esvaziaram, aceita e retorna (sem adicionar passo extra)
     if (stack.length === 0 && buffer.length === 0) {
-      break;
+      return { result: 'Aceito', trace, iterations: i };
     }
   }
 
   return { result: 'Aceito', trace, iterations: i };
 }
+
 
 function generateSentence(maxLength = 15) {
   let result = [];
@@ -250,19 +283,7 @@ function exibirTraço(sentenca) {
     entradaCell.textContent = t.input.join(" ");
 
     const acaoCell = document.createElement("td");
-
-    // última situação
-    if (t.top === '$' && t.current === '$') {
-      acaoCell.textContent = `Aceito em ${resultado.iterations} interações`;
-    } else if (resultado.result === "Erro" && i === resultado.trace.length - 1) {
-      acaoCell.textContent = `Erro em ${resultado.iterations} interações`;
-    } else if (t.top === t.current && terminals.includes(t.top)) {
-      acaoCell.textContent = `Ler → ${t.current}`;
-    } else if (parsingTable[t.top] && parsingTable[t.top][t.current]) {
-      acaoCell.textContent = `${t.top} → ${parsingTable[t.top][t.current].join(' ')}`;
-    } else {
-      acaoCell.textContent = "Erro";
-    }
+    acaoCell.textContent = t.action;
 
     row.appendChild(passoCell);
     row.appendChild(pilhaCell);
@@ -274,6 +295,7 @@ function exibirTraço(sentenca) {
 
   document.getElementById("proximoBtn").style.display = "none";
 }
+
 
 function iniciarPassoAPasso() {
   const sentenca = document.getElementById("input").value;

@@ -24,13 +24,13 @@
 
     <section>
       <h2>Gramática LL(1)</h2>
-      <pre id="gramatica">
-  S → a A D | b B c  
-  A → c B d | b D a  
-  B → b C d | ε  
-  C → c D d  
-  D → d B | a C b
-      </pre>
+        <pre id="gramatica">
+          S → a A D | b B c | c D a
+          A → c B d | b D a
+          B → b C d | ε
+          C → c D d
+          D → d B | a C b
+        </pre>
     </section>
 
     <section>
